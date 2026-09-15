@@ -24,7 +24,8 @@ namespace AuthService.API.Controllers
             _users = new List<UserRecord>
             {
                 new("admin",   _hasher.HashPassword("admin",  "Admin1234!"),  "Admin"),
-                new("doctor",  _hasher.HashPassword("doctor", "Doctor1234!"), "Practitioner")
+                new("doctor",  _hasher.HashPassword("doctor", "Doctor1234!"), "Practitioner"),
+                new("assistant", _hasher.HashPassword("assistant", "Assistant1234!"), "Assistant")
             };
         }
 

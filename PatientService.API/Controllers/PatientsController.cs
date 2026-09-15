@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PatientService.API.DTOs;
 using PatientService.API.Services;
@@ -6,6 +7,7 @@ namespace PatientService.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class PatientsController : ControllerBase
     {
         private readonly IPatientService _service;
@@ -35,6 +37,7 @@ namespace PatientService.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Practitioner,Admin")]
         public async Task<IActionResult> Create([FromBody] CreatePatientDto dto)
         {
             var created = await _service.CreateAsync(dto);
@@ -42,6 +45,7 @@ namespace PatientService.API.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Practitioner,Admin")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdatePatientDto dto)
         {
             var updated = await _service.UpdateAsync(id, dto);

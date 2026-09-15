@@ -74,6 +74,24 @@ services:
     networks:
       - microservices-network
 
+  diabetesriskservice:
+    build:
+      context: ./DiabetesRiskService.API
+      dockerfile: Dockerfile
+    container_name: diabetesriskservice
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - Services__PatientServiceUrl=http://patientservice:8080/
+      - Services__NoteServiceUrl=http://noteservice:8080/
+    ports:
+      - "5004:8080"
+    depends_on:
+      - patientservice
+      - noteservice
+    networks:
+      - microservices-network
+
   gateway:
     build:
       context: ./Gateway.API
@@ -88,6 +106,7 @@ services:
       - patientservice
       - authservice
       - noteservice
+      - diabetesriskservice
     networks:
       - microservices-network
 

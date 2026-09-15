@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NoteService.API.DTOs;
 using NoteService.API.Services;
@@ -6,6 +7,7 @@ namespace NoteService.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class NotesController : ControllerBase
 {
     private readonly INoteService _noteService;
@@ -38,6 +40,7 @@ public class NotesController : ControllerBase
 
     // POST /api/notes
     [HttpPost]
+    [Authorize(Roles = "Practitioner,Admin")]
     public async Task<ActionResult<NoteDto>> Create([FromBody] CreateNoteDto dto)
     {
         var created = await _noteService.CreateAsync(dto);
@@ -46,6 +49,7 @@ public class NotesController : ControllerBase
 
     // PUT /api/notes/{id}
     [HttpPut("{id}")]
+    [Authorize(Roles = "Practitioner,Admin")]
     public async Task<IActionResult> Update(string id, [FromBody] UpdateNoteDto dto)
     {
         var updated = await _noteService.UpdateAsync(id, dto);
@@ -59,6 +63,7 @@ public class NotesController : ControllerBase
 
     // DELETE /api/notes/{id}
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Practitioner,Admin")]
     public async Task<IActionResult> Delete(string id)
     {
         var deleted = await _noteService.DeleteAsync(id);
