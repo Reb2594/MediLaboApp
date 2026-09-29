@@ -51,5 +51,10 @@ namespace PatientService.API.Services
 
             return _mapper.Map<PatientDto>(updated);
         }
+
+        public async Task<bool> DeleteAsync(int id)
+        {
+            return await _repository.DeleteAsync(id);
+        }
     }
 }
