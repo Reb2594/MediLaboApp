@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
@@ -9,6 +9,7 @@ function useApi(url) {
   const [data, setData]       = useState(null)   
   const [loading, setLoading] = useState(true)   
   const [error, setError]     = useState(null)  
+  const [reloadIndex, setReloadIndex] = useState(0)
 
   useEffect(() => {
     if (!url) return 
@@ -38,9 +39,13 @@ function useApi(url) {
         setLoading(false)
       })
 
-  }, [url, token]) 
+  }, [url, token, reloadIndex]) 
 
-  return { data, loading, error }
+  // Permet de redéclencher manuellement l'appel (ex: après avoir ajouté une note,
+  // pour rafraîchir le niveau de risque sans recharger toute la page).
+  const refetch = useCallback(() => setReloadIndex(i => i + 1), [])
+
+  return { data, loading, error, refetch }
 }
 
 export default useApi

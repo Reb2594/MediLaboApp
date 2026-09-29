@@ -8,7 +8,7 @@ import FormField from '../components/FormField'
 function PatientFormPage() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const {token} = useAuth()
+  const {token, canWrite} = useAuth()
   const isEdit = Boolean(id)
 
   const [form, setForm] = useState({
@@ -58,7 +58,9 @@ function PatientFormPage() {
     })
 
     if (response.ok) {
-      navigate('/patients')
+      navigate(isEdit ? `/patients/${id}` : '/patients')
+    } else if (response.status === 403) {
+      setErrorMessage("Vous n'avez pas les droits pour effectuer cette action (rôle lecture seule).")
     } else {
       setErrorMessage('Erreur lors de la sauvegarde. Vérifiez les champs et réessayez.')
     }
@@ -66,6 +68,15 @@ function PatientFormPage() {
 
   const fieldStyle = { display: 'block', marginBottom: '1rem' }
   const inputStyle = { marginLeft: '0.5rem', padding: '4px' }
+
+  if (!canWrite) {
+    return (
+      <div style={{ padding: '2rem' }}>
+        <p className="error-message">Vous n'avez pas les droits pour accéder à cette page (rôle lecture seule).</p>
+        <Button variant="secondary" onClick={() => navigate('/patients')}>← Retour</Button>
+      </div>
+    )
+  }
 
    return (
     <div style={{ padding: '2rem', maxWidth: '500px' }}>
