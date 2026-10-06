@@ -36,7 +36,7 @@ L'application répond à la demande d'une clinique de santé qui souhaite automa
 ## 🔐 Sécurité
 
 - **Authentification** : `AuthService` génère un token **JWT** au login, contenant le rôle de l'utilisateur
-- **Autorisation en couches** : la Gateway valide une première fois le token, puis **chaque microservice le revalide lui-même** (`AddJwtBearer` + `[Authorize]`) — aucun service ne fait confiance au réseau interne (defense in depth)
+- **Autorisation en couches** : la Gateway valide une première fois le token, puis **chaque microservice le revalide lui-même** (`AddJwtBearer` + `[Authorize]`) — aucun service ne fait confiance au réseau interne
 - **Rôles** :
   - `Admin` / `Practitioner` : lecture + écriture (création/modification/suppression patients et notes)
   - `Assistant` : lecture seule (`[Authorize(Roles = "Practitioner,Admin")]` sur les endpoints d'écriture ; boutons masqués côté Frontend pour l'ergonomie)
@@ -60,13 +60,13 @@ L'application répond à la demande d'une clinique de santé qui souhaite automa
 ### 3. PatientService
 - **Technologie** : ASP.NET Core 9 + Entity Framework Core
 - **Responsabilités** : CRUD complet des patients (nom, prénom, date de naissance, genre, adresse, téléphone)
-- **Base de données** : SQL Server (`MediLaboDb`), **normalisée 3NF** — l'âge n'est jamais stocké, il est calculé à la volée à partir de la date de naissance
+- **Base de données** : SQL Server (`MediLaboDb`), **normalisée 3NF**
 - **Port** : 5001
 
 ### 4. NoteService
 - **Technologie** : ASP.NET Core 9
 - **Responsabilités** : CRUD des notes médicales libres rédigées par les praticiens, liées à un patient via `PatientId`
-- **Base de données** : MongoDB (documents JSON, schéma flexible adapté à du texte libre)
+- **Base de données** : MongoDB
 - **Port** : 5002
 
 ### 5. DiabetesRiskService
@@ -113,7 +113,7 @@ Démarre les 7 conteneurs : SQL Server, MongoDB, AuthService, PatientService, No
 | MongoDB | localhost:27017 |
 
 ### 📚 Documentation API (Swagger)
-Chaque backend expose une interface Swagger en environnement de développement, pratique pour explorer et tester les endpoints sans Postman :
+Chaque backend expose une interface Swagger pour explorer et tester les endpoints :
 - AuthService : http://localhost:5003/swagger
 - PatientService : http://localhost:5001/swagger
 - NoteService : http://localhost:5002/swagger
@@ -144,10 +144,10 @@ La réponse contient un `token` à utiliser dans l'en-tête `Authorization: Bear
 ### SQL Server — PatientService (`MediLaboDb`)
 Normalisée en **3NF** :
 - Table `Patients` (`Id, FirstName, LastName, DateOfBirth, Gender, Address, PhoneNumber`)
-- Aucune donnée dérivée stockée (l'âge est calculé, jamais persisté)
+- Aucune donnée dérivée stockée
 
 ### MongoDB — NoteService
-Collection `Notes` contenant : `PatientId, PatientName, NoteText`. Pas de schéma fixe imposé — adapté à du texte médical libre et à son évolution sans migration.
+Collection `Notes` contenant : `PatientId, PatientName, NoteText`.
 
 ---
 
