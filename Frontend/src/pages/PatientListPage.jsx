@@ -1,9 +1,11 @@
 import { useNavigate } from 'react-router-dom'
 import useApi from '../hooks/useApi'
 import Button from '../components/Button'
+import { useAuth } from '../context/AuthContext'
 
 function PatientListPage() {
  const navigate = useNavigate()
+ const { canWrite } = useAuth()
  const { data: patients, loading, error } = useApi('/api/patients')
  
  if (loading) return <p style={{ padding: '2rem' }}>Chargement des patients...</p>
@@ -14,11 +16,13 @@ function PatientListPage() {
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
       <h1 style={{ margin: 0 }}>Liste des patients</h1>
     </div>
-    <div style={{ marginBottom: '1rem' }}>
-      <Button variant ="primary" onClick={() => navigate('/patients/new')}>
-        + Ajouter un patient
-      </Button>
-    </div>
+    {canWrite && (
+      <div style={{ marginBottom: '1rem' }}>
+        <Button variant ="primary" onClick={() => navigate('/patients/new')}>
+          + Ajouter un patient
+        </Button>
+      </div>
+    )}
     <table className="table">
       <thead>
         <tr>

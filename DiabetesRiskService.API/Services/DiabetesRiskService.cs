@@ -6,6 +6,7 @@ namespace DiabetesRiskService.API.Services;
 public class DiabetesRiskService : IDiabetesRiskService
 {
     private readonly IHttpClientFactory _httpClientFactory;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
     // Termes déclencheurs
     private static readonly string[] TriggerTerms =
@@ -23,15 +24,25 @@ public class DiabetesRiskService : IDiabetesRiskService
         "anticorps"
     ];
 
-    public DiabetesRiskService(IHttpClientFactory httpClientFactory)
+    public DiabetesRiskService(IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor)
     {
         _httpClientFactory = httpClientFactory;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public async Task<DiabetesAssessmentDto?> AssessAsync(int patientId)
     {
         var patientClient = _httpClientFactory.CreateClient("PatientService");
         var noteClient = _httpClientFactory.CreateClient("NoteService");
+
+        // On récupère le token JWT envoyé par le Frontend/Gateway dans la requête entrante,
+        // pour le transmettre tel quel aux appels sortants vers les autres microservices.
+        var incomingAuthHeader = _httpContextAccessor.HttpContext?.Request.Headers.Authorization.ToString();
+        if (!string.IsNullOrEmpty(incomingAuthHeader))
+        {
+            patientClient.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", incomingAuthHeader);
+            noteClient.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", incomingAuthHeader);
+        }
 
         var patient = await patientClient.GetFromJsonAsync<PatientInfoDto>($"api/patients/{patientId}");
         if (patient is null)

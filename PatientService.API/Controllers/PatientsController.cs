@@ -56,5 +56,18 @@ namespace PatientService.API.Controllers
 
             return Ok(updated);
         }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Practitioner,Admin")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var deleted = await _service.DeleteAsync(id);
+            if (!deleted)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
+        }
     }
 }

@@ -48,5 +48,18 @@ namespace PatientService.API.Repositories
             await _context.SaveChangesAsync();
             return existing;
         }
+
+        public async Task<bool> DeleteAsync(int id)
+        {
+            var existing = await _context.Patients.FindAsync(id);
+            if (existing is null)
+            {
+                return false;
+            }
+
+            _context.Patients.Remove(existing);
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 }
